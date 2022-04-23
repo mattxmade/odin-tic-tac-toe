@@ -33,7 +33,7 @@ main {
   outline: 0.1rem dashed lightgray;
 }
 
-main div {
+main .tile {
   flex-shrink: 0;
   max-width: 14rem;
   max-height: 14rem;
@@ -42,4 +42,26 @@ main div {
   border-radius: 0.5rem;
   background-color: white;
   outline: 0.1rem solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tile p {
+  font-size: 8rem;
+}
+
+.mask {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: 0.3s;
+  background-color: pink;
+}
+
+.dissolve-mask {
+  background-color: transparent;
 }/*# sourceMappingURL=style.css.map */
