@@ -47,6 +47,7 @@ main .tile {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  cursor: not-allowed;
 }
 
 .tile p {
@@ -60,6 +61,7 @@ main .tile {
   height: 100%;
   transition: 0.3s;
   background-color: pink;
+  cursor: pointer;
 }
 
 .dissolve-mask {
