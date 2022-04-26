@@ -1,96 +1,230 @@
 const Game = (() => {
-  let availableTiles = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  let unavailableTiles = [];
+  // win combinations
+  const row1 = [0, 1, 2];
+  const row2 = [3, 4, 5];
+  const row3 = [6, 7, 8];
 
-  let playTracker = availableTiles.slice(0);
+  const col1 = [0, 3, 6];
+  const col2 = [1, 4, 7];
+  const col3 = [2, 5, 8];
 
-  const masks = document.querySelectorAll('.mask');
+  const dia1 = [0, 4, 8];
+  const dia2 = [2, 4, 6];
+
+  const winCombinations = [
+    row1, row2, row3,
+    col1, col2, col3,
+    dia1, dia2 ];
+
+  // game assets
+  const playerMoves = [];
+  const comptrMoves = [];
+  const available   = [];
+  const removedTiles     = [];
+
+  // tile selection tracker
+  let lastTile = -1;
+  let currTile = -1;
+
+  let playerScore = 0;
+  let comptrScore = 0;
+
+  let play = false;
+
+  // DOM elemets
+  let masks = document.querySelectorAll('.mask');
   const gameTiles = document.querySelectorAll('.tile');
 
   masks.forEach((mask, index) => {
     mask.addEventListener('click', () => {
-      // mask.classList.add('dissolve-mask');
+      if (!play) return;
 
-      // setTimeout(() => {
-      //   mask.remove();
-      // }, 300);
+      currTile = index;
 
-      _assignTile('player', index);
-      _comPlay();
+      if (currTile !== lastTile) {
+        _playerMove(index);
+        lastTile = currTile;
+      } 
+      
     });
-  });
+  }, {once : true});
+
+  //private game function methods
+  const _newGame = () => {
+    _resetBoard();
+    play = true;
+    console.log('new game');
+  }
+
+  const _resetBoard = () => {
+    available.length = 0;
+
+    for(let i = 0; i <= 8; i++ ) {
+      available.push(i);
+    }
+
+    playerMoves.length = 0;
+    comptrMoves.length = 0;
+
+    lastTile = -1;
+    currTile = -1;
+
+    _resetTiles();
+
+    removedTiles.length = 0;
+  }
+
+  const _playerMove = (tile) => {
+
+    playerMoves.push(tile);
+
+    _removeTileFromPlay(playerMoves[playerMoves.length-1]);
+    _assignTile('player', tile);
+            
+    const isWinningCombo = _checkTileCombination('player', playerMoves);
+    if (isWinningCombo) return;
+    
+    _computerPlay();
+  }
+
+  const _computerPlay = () => {
+    if (available.length < 2) return;
+    const cpuMove = available[Math.floor( Math.random() * available.length )];
+
+    comptrMoves.push(cpuMove);
+
+    _removeTileFromPlay(comptrMoves[comptrMoves.length-1]);
+
+     setTimeout(() => {
+       _assignTile('computer', cpuMove);
+     }, 1000); 
+
+    _checkTileCombination('computer', comptrMoves);
+  }
+
+  const _removeTileFromPlay = (tile) => {
+    available.filter((compare, index) => {
+      if (compare === tile) {
+        available.splice(index, 1);
+        removedTiles.push(index);
+      }
+    });
+  }
+
+  const _assignTile = (origin, tileNum) => {
+    gameTiles[tileNum].style.backgroundColor = 'white';
+    const tileContent = gameTiles[tileNum].querySelector('p');
+
+    tileContent.textContent = 'O';
+    if (origin === 'player') tileContent.textContent = 'X';
+
+    _revealPlay(tileNum);
+  }
+
+  const _resetTiles = () => {
+    if (removedTiles.length > 0) {
+
+      masks.forEach(mask => {
+
+        mask.style.cursor = 'pointer';
+        mask.style.userSelect = 'auto';
+        mask.classList.remove('dissolve-mask');
+
+      });
+    }
+  }
 
   const _revealPlay = (position) => {
     masks[position].classList.add('dissolve-mask');
     
     setTimeout(() => {
-      masks[position].remove();
-    }, 300);    
+      masks[position].style.userSelect = 'auto';
+      masks[position].style.cursor = 'not-allowed';
+    }, 300);
   }
 
-  const _assignTile = (origin, tileNum) => {
-    let tileContent = gameTiles[tileNum].querySelector('p')
-
-    console.dir(gameTiles[tileNum]);
-    console.dir(tileContent);
-
-    if (origin === 'player') {
-      tileContent.textContent = 'X';
-    }
-    else {
-      tileContent.textContent = 'O';
-    }
+  const _checkTileCombination = (origin, moveSet) => {
+    if (moveSet.length < 3) return;
     
-    gameTiles[tileNum].appendChild(tileContent);
+    let winSet;
+    let winner = false;
 
-    _revealPlay(tileNum);
-    _updateAvailableTiles(tileNum, tileContent.textContent);
-  }
+    const moveSetToCompare = moveSet.sort((a, z) => a - z).join();
 
-  const _updateAvailableTiles = (number, play) => {
-    unavailableTiles.push(number+1);
+    winCombinations.forEach(combination => {
+      if (moveSetToCompare === combination.join()) winner = true;
 
-    availableTiles.splice(number, 1, '/');
-    playTracker.splice(number, 1, play);
-    
-    console.table(availableTiles);
-    console.table(unavailableTiles);
-    console.table(playTracker);
-  }
-
-  const _checkAvailableTiles = () => {
-    unavailableTiles.forEach(unavailableTile => {
-      return unavailableTile;
-    });
-  }
-
-  const _getRandomPlay = () => {
-    let count = 0;
-    let random = '/';
-    let lastPosition;
-
-    availableTiles.forEach((tile, index) => {
-      if (typeof tile === 'number') lastPosition = index;
-      if (tile === '/') count++;
-    });
-
-    while (random === '/') {
-      random = availableTiles[ Math.floor( Math.random() * availableTiles.length )];
+      let match = 0;
       
-      if (count === availableTiles.length && random === '/') {
-        return lastPosition;
-      };
-    }
+      for (number of combination) {
+        
+        if (moveSetToCompare.includes(number)) match++;
+        if (match === 3) {
+          winSet = combination;
+          winner = true;
+          break;
+        }
+      }
+    });
 
-    return random;
+    if (winner) _declareWinner(origin, winSet);
+    return winner;
   }
 
-  const _comPlay = () => {
-    if (unavailableTiles.length === 9) return;
+  const _declareWinner = (winner, tilesToHighlight) => {
 
-    setTimeout(() => {
-      _assignTile('computer', _getRandomPlay()-1);
-    }, 1000);   
+    for (tile of gameTiles) {
+      tile.style.backgroundColor = 'black';
+
+      if (tilesToHighlight.includes(Number(tile.id))) {
+        tile.style.backgroundColor = 'yellow';
+      }
+    }
+
+    switch(winner) {
+      case 'player':
+        playerScore++
+        console.log( `You Win!` );
+        console.log( `Your Score: ${playerScore}` );
+        break;
+      
+      case 'computer':
+        comptrScore++;
+        console.log( `You Lose!` );
+        console.log( `COM Score: ${comptrScore}` );
+        break;
+    }
+    _endGame();
+  }
+
+  const _endGame = () => {
+    play = false;
+    console.log('end of game');
+
+    gameTiles.forEach(tile => {
+      // tile.style.backgroundColor = 'yellow';
+    });
+
+    masks.forEach(mask => {
+      mask.style.userSelect = 'none';
+    });
+  }
+
+  const _handleScore = () => {
+  }
+
+  return {
+    begin: () => {
+      _newGame();
+    }
   }
 
 })();
+
+const tictactoe = Game;
+
+const newGameBtn = document.querySelector('.js-new-game-btn');
+newGameBtn.addEventListener('click', () => {
+  // newGameBtn.textContent = 'Reset Game';
+  tictactoe.begin();
+});
