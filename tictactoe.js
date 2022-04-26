@@ -17,10 +17,10 @@ const Game = (() => {
     dia1, dia2 ];
 
   // game assets
-  const playerMoves = [];
-  const comptrMoves = [];
-  const available   = [];
-  const removedTiles     = [];
+  const playerMoves  = [];
+  const comptrMoves  = [];
+  const available    = [];
+  const removedTiles = [];
 
   // tile selection tracker
   let lastTile = -1;
@@ -30,6 +30,8 @@ const Game = (() => {
   let comptrScore = 0;
 
   let play = false;
+
+  let hasComPlayed = true;
 
   // DOM elemets
   let masks = document.querySelectorAll('.mask');
@@ -41,10 +43,12 @@ const Game = (() => {
 
       currTile = index;
 
-      if (currTile !== lastTile) {
+      if (currTile !== lastTile && hasComPlayed === true) {
         _playerMove(index);
         lastTile = currTile;
-      } 
+      }
+
+      hasComPlayed = false;
       
     });
   }, {once : true});
@@ -85,11 +89,14 @@ const Game = (() => {
     if (isWinningCombo) return;
     
     _computerPlay();
+
+    if (available.length === 0) console.log('draw game');
   }
 
   const _computerPlay = () => {
     if (available.length < 2) return;
-    const cpuMove = available[Math.floor( Math.random() * available.length )];
+   
+    const cpuMove = _generatePlay();
 
     comptrMoves.push(cpuMove);
 
@@ -100,6 +107,40 @@ const Game = (() => {
      }, 1000); 
 
     _checkTileCombination('computer', comptrMoves);
+    hasComPlayed = true;
+  }
+
+  const _generatePlay = () => {
+    const tilesToConsider = [];
+    const tileSetsToConsider = [];
+
+    const sortPlayerMoves = playerMoves.sort((a, z) => a - z);
+
+    winCombinations.forEach(combination => {
+
+      let accumulator = 0;
+
+      for (let i = 0; i < sortPlayerMoves.length; i++) {
+        if (combination.includes(sortPlayerMoves[i])) accumulator++;
+
+        if (accumulator === 2) {
+          tileSetsToConsider.push(combination);
+          break;
+        }
+      }
+    });
+
+    for (tileSet of tileSetsToConsider) {
+      for (tile of tileSet) {
+        if (available.includes(tile)) tilesToConsider.push(tile);
+      }
+    }
+
+    let random = tilesToConsider[ Math.floor ( Math.random() * tilesToConsider.length ) ];
+    if (random === undefined) random = available[Math.floor( Math.random() * available.length )];
+
+    //console.log(random);
+    return random;
   }
 
   const _removeTileFromPlay = (tile) => {
@@ -124,12 +165,12 @@ const Game = (() => {
   const _resetTiles = () => {
     if (removedTiles.length > 0) {
 
-      masks.forEach(mask => {
+      masks.forEach((mask, index) => {
 
         mask.style.cursor = 'pointer';
         mask.style.userSelect = 'auto';
         mask.classList.remove('dissolve-mask');
-
+        //gameTiles[index].style.backgroundColor = 'white';
       });
     }
   }
@@ -176,7 +217,9 @@ const Game = (() => {
     for (tile of gameTiles) {
       tile.style.backgroundColor = 'black';
 
+      
       if (tilesToHighlight.includes(Number(tile.id))) {
+        console.log('eh???')
         tile.style.backgroundColor = 'yellow';
       }
     }
