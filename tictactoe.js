@@ -41,15 +41,13 @@ const Game = (() => {
     mask.addEventListener('click', () => {
       if (!play) return;
 
-      currTile = index;
+      if (hasComPlayed) currTile = index;
 
-      if (currTile !== lastTile && hasComPlayed === true) {
+      if (currTile !== lastTile) {
+        hasComPlayed = false;
         _playerMove(index);
         lastTile = currTile;
-      }
-
-      hasComPlayed = false;
-      
+      } 
     });
   }, {once : true});
 
@@ -76,6 +74,7 @@ const Game = (() => {
     _resetTiles();
 
     removedTiles.length = 0;
+    hasComPlayed = true;
   }
 
   const _playerMove = (tile) => {
@@ -117,7 +116,6 @@ const Game = (() => {
     const sortPlayerMoves = playerMoves.sort((a, z) => a - z);
 
     winCombinations.forEach(combination => {
-
       let accumulator = 0;
 
       for (let i = 0; i < sortPlayerMoves.length; i++) {
@@ -219,7 +217,6 @@ const Game = (() => {
 
       
       if (tilesToHighlight.includes(Number(tile.id))) {
-        console.log('eh???')
         tile.style.backgroundColor = 'yellow';
       }
     }
