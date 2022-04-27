@@ -16,6 +16,8 @@ const Game = (() => {
     col1, col2, col3,
     dia1, dia2 ];
 
+  let winningMoves = [];
+
   // game assets
   const playerMoves  = [];
   const comptrMoves  = [];
@@ -84,8 +86,8 @@ const Game = (() => {
     _removeTileFromPlay(playerMoves[playerMoves.length-1]);
     _assignTile('player', tile);
             
-    const isWinningCombo = _checkTileCombination('player', playerMoves);
-    if (isWinningCombo) return;
+    const isWinningCombo = _checkTileCombination(playerMoves);
+    if (isWinningCombo) return _declareWinner('player', playerMoves);
     
     _computerPlay();
 
@@ -102,24 +104,32 @@ const Game = (() => {
     _removeTileFromPlay(comptrMoves[comptrMoves.length-1]);
 
      setTimeout(() => {
-       _assignTile('computer', cpuMove);
-     }, 1000); 
 
-    _checkTileCombination('computer', comptrMoves);
-    hasComPlayed = true;
+       _assignTile('computer', cpuMove);
+
+       if (_checkTileCombination(comptrMoves)) _declareWinner('computer', comptrMoves);
+       hasComPlayed = true;
+
+     }, 1000); 
   }
 
   const _generatePlay = () => {
     const tilesToConsider = [];
     const tileSetsToConsider = [];
 
+    const comptrMovesCopy = comptrMoves.slice(0);
     const sortPlayerMoves = playerMoves.sort((a, z) => a - z);
+    const sortComptrMoves = comptrMoves.sort((a, z) => a - z);
 
+    // consider any winCombinations if moveSet matches any two tiles
     winCombinations.forEach(combination => {
       let accumulator = 0;
 
-      for (let i = 0; i < sortPlayerMoves.length; i++) {
-        if (combination.includes(sortPlayerMoves[i])) accumulator++;
+      let moves = sortPlayerMoves;
+      if (sortComptrMoves.length >= 2 && !_checkTileCombination(playerMoves)) moves = sortComptrMoves;
+
+      for (move of moves) {
+        if (combination.includes(move)) accumulator++;
 
         if (accumulator === 2) {
           tileSetsToConsider.push(combination);
@@ -128,17 +138,41 @@ const Game = (() => {
       }
     });
 
-    for (tileSet of tileSetsToConsider) {
-      for (tile of tileSet) {
-        if (available.includes(tile)) tilesToConsider.push(tile);
-      }
+    // flatten winCombo arrays to one long list
+    const oneDimesionalTiles = tileSetsToConsider.flat();
+
+    // if potential move is available add it to final consideration list
+    for (tile of oneDimesionalTiles) {
+      if (available.includes(tile)) tilesToConsider.push(tile);
     }
 
-    let random = tilesToConsider[ Math.floor ( Math.random() * tilesToConsider.length ) ];
-    if (random === undefined) random = available[Math.floor( Math.random() * available.length )];
+    // default for second computer play
+    let tileToPlay = tilesToConsider[ Math.floor ( Math.random() * tilesToConsider.length ) ];
 
-    //console.log(random);
-    return random;
+    if (comptrMoves.length >= 2) {
+      for ( tile of tilesToConsider ) {
+
+        // add potential tile choice to end of already played computer move list
+        comptrMovesCopy.push(tile);
+
+        // test if above could win game // break loop if true
+        if ( _checkTileCombination(comptrMovesCopy) ) {
+          tileToPlay = tile;
+          comptrMovesCopy.length = 0;
+          break;
+        } 
+
+        // remove potenital tile from list - not a winCombo - ready for next tile
+        comptrMovesCopy.pop();
+
+      };
+    }
+
+    // default first computer play - comptrMoves [] is always empty on first play
+    if (tileToPlay === undefined) tileToPlay = available[Math.floor( Math.random() * available.length )];
+
+    //console.log(tileToPlay);
+    return tileToPlay;
   }
 
   const _removeTileFromPlay = (tile) => {
@@ -152,6 +186,7 @@ const Game = (() => {
 
   const _assignTile = (origin, tileNum) => {
     gameTiles[tileNum].style.backgroundColor = 'white';
+    
     const tileContent = gameTiles[tileNum].querySelector('p');
 
     tileContent.textContent = 'O';
@@ -163,12 +198,11 @@ const Game = (() => {
   const _resetTiles = () => {
     if (removedTiles.length > 0) {
 
-      masks.forEach((mask, index) => {
+      masks.forEach((mask) => {
 
         mask.style.cursor = 'pointer';
         mask.style.userSelect = 'auto';
         mask.classList.remove('dissolve-mask');
-        //gameTiles[index].style.backgroundColor = 'white';
       });
     }
   }
@@ -182,7 +216,7 @@ const Game = (() => {
     }, 300);
   }
 
-  const _checkTileCombination = (origin, moveSet) => {
+  const _checkTileCombination = (moveSet) => {
     if (moveSet.length < 3) return;
     
     let winSet;
@@ -206,7 +240,7 @@ const Game = (() => {
       }
     });
 
-    if (winner) _declareWinner(origin, winSet);
+    // console.log(`Winning Set: ${winSet}`);
     return winner;
   }
 
