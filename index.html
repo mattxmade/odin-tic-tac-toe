@@ -4,14 +4,47 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="style.css">
   <title>Tic-Tack-Toe</title>
 </head>
 <body>
 
   <div class="wrapper">
+
     <button class="js-new-game-btn">New Game</button>
+
+    <ul class="score">
+      <li>
+        <p>YOU
+          <span class="js-player-score">
+            <i class="fas fa-circle you you-1"></i>
+            <i class="fas fa-circle you you-2"></i>
+            <i class="fas fa-circle you you-3"></i>
+          </span>
+        </p>
+      </li>
+
+      <li><i class="fas fa-trophy"></i></li>
+
+      <li>
+        <p>
+          <span class="js-computer-score">
+            <i class="fas fa-circle com com-1"></i>
+            <i class="fas fa-circle com com-2"></i>
+            <i class="fas fa-circle com com-3"></i>
+          </span>COM
+        </p>
+      </li>
+    </ul>
+
     <main>
+
+      <h1>Tic-Tack-Toe</h1>
+
+      <div class="winner">
+       <p>You win <i class="fas fa-award"></i></p>
+      </div>
 
       <div id="0" class="tile">
         <div class="mask"></div>
