@@ -30,8 +30,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1rem;
-  padding: 1rem;
 }
 
 ul {
@@ -42,18 +40,19 @@ ul {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  top: 6rem;
   margin: 2rem 0;
-  font-size: 3rem;
+  transition: 0.9s;
+  font-size: 2.8rem;
   position: relative;
+  padding: 2rem 1rem;
   border-radius: 1rem;
-  padding: 1rem 1rem 4rem;
   border: 0.25rem groove lightblue;
   background: linear-gradient(45deg, rgb(181, 228, 255), rgb(0, 247, 247), rgb(181, 228, 255));
-  transition: 0.6s;
 }
 @media (max-width: 620px) {
   ul {
-    top: -6rem;
+    top: 2rem;
     height: 1rem;
     font-size: 1.8rem;
     padding: 1.5rem 1rem;
@@ -73,13 +72,18 @@ ul {
   }
 }
 
+.fa-check-circle {
+  color: green;
+}
+
 main {
   gap: 2rem;
   padding: 3rem;
   display: flex;
   flex-wrap: wrap;
-  max-width: 46rem;
-  top: -5rem;
+  top: 3rem;
+  max-width: 47rem;
+  z-index: 1;
   position: relative;
   height: -webkit-fit-content;
   height: -moz-fit-content;
@@ -87,13 +91,11 @@ main {
   align-items: center;
   justify-content: center;
   border-radius: 1rem;
-  background-color: aqua;
-  outline: 0.1rem dashed black;
+  background: linear-gradient(180deg, aqua 90%, white 100%);
 }
 @media (max-width: 620px) {
   main {
-    outline: none;
-    background: linear-gradient(180deg, aqua 40%, white 50%);
+    top: 2rem;
   }
 }
 
@@ -105,7 +107,7 @@ main .winner {
 
 main h1,
 main .winner {
-  top: 5rem;
+  top: 2.5rem;
   font-size: 12rem;
   position: absolute;
   font-family: "Amatic SC", cursive;
@@ -119,22 +121,52 @@ main .winner {
 
 main h1 {
   z-index: 2;
+  text-align: center;
+}
+
+main h1 p {
+  transform: rotate(90deg);
+  padding: 0;
+  margin: 0;
+  position: relative;
+  top: -3rem;
+}
+@media (max-width: 880px) {
+  main h1 p {
+    top: -3rem;
+  }
+}
+@media (max-width: 620px) {
+  main h1 p {
+    top: 2rem;
+  }
 }
 
 main .winner {
   color: aqua;
   z-index: 1;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column-reverse;
+  justify-content: center;
+}
+
+.winner p {
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0 2rem;
+  transition: 0.3s;
 }
 
 main .tile {
   flex-shrink: 0;
-  max-width: 14rem;
-  max-height: 14rem;
-  width: 20vw;
-  height: 20vw;
+  max-width: 13.75rem;
+  max-height: 13.75rem;
+  width: 17.7777777778vw;
+  height: 17.7777777778vw;
   border-radius: 0.5rem;
   background-color: white;
-  outline: 0.1rem solid black;
   z-index: 3;
   display: flex;
   align-items: center;
@@ -148,7 +180,7 @@ main .tile {
 .tile p {
   font-size: 8rem;
 }
-@media (max-width: 880px) {
+@media (max-width: 620px) {
   .tile p {
     font-size: 5rem;
   }
@@ -156,8 +188,8 @@ main .tile {
 
 .mask {
   position: absolute;
-  width: 90%;
-  height: 90%;
+  width: 92.5%;
+  height: 92.5%;
   transition: 0.3s;
   background-color: pink;
   border: 5rem groove rgb(255, 175, 185);
@@ -173,13 +205,24 @@ main .tile {
   border: 0.5rem dashed rgba(57, 86, 150, 0.5);
 }
 
+.begin-button {
+  margin: 8rem 0 0;
+}
+@media (max-width: 620px) {
+  .begin-button {
+    margin: 12rem 0 0;
+  }
+}
+
+.reset-button {
+  margin-top: 1rem;
+}
+
 button {
-  position: relative;
-  top: 8rem;
-  height: 5rem;
   width: 10ch;
-  margin: 2rem 0;
+  height: 5rem;
   font-size: 3rem;
+  position: relative;
   cursor: pointer;
   transition: 0.3s;
   border-radius: 0.5rem;
@@ -187,12 +230,35 @@ button {
   border: 0.1rem dashed rgb(0, 0, 0);
   box-shadow: 0 0 1rem 0.1rem rgba(255, 255, 255, 0.5);
 }
-@media (max-width: 620px) {
-  button {
-    top: 3rem;
-  }
-}
 
 button:hover {
   border: 0.5rem solid yellow;
+}
+
+footer {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  bottom: 6rem;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+}
+@media (max-width: 620px) {
+  footer {
+    bottom: 3rem;
+  }
+}
+
+footer ul {
+  max-width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  border: none;
+  background: transparent;
+}
+
+footer a {
+  color: black;
 }/*# sourceMappingURL=style.css.map */
