@@ -19,7 +19,9 @@ html {
 body {
   display: flex;
   align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
 }
 
 .wrapper {
@@ -33,9 +35,9 @@ body {
 }
 
 ul {
+  margin: 0;
   width: 90%;
   max-width: 46rem;
-  margin: 0;
   list-style: none;
   display: flex;
   align-items: center;
@@ -231,12 +233,13 @@ button:hover {
 }
 
 footer {
-  z-index: 10;
   margin: 0;
   padding: 0;
+  z-index: 10;
   width: 100%;
   bottom: 6rem;
-  position: absolute;
+  position: fixed;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
 }
@@ -247,13 +250,16 @@ footer {
 }
 
 footer ul {
-  max-width: 100%;
   margin: 0;
+  padding: 0 2rem;
+  min-width: 100%;
   display: flex;
   justify-content: space-between;
   border: none;
+  border-radius: 0;
+  box-sizing: border-box;
   background: transparent;
-  background: white;
+  background-color: white;
 }
 
 footer a {
