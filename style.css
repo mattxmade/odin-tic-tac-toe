@@ -231,6 +231,7 @@ button:hover {
 }
 
 footer {
+  z-index: 10;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -252,6 +253,7 @@ footer ul {
   justify-content: space-between;
   border: none;
   background: transparent;
+  background: white;
 }
 
 footer a {
