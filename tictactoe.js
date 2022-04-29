@@ -41,6 +41,9 @@ const Game = (() => {
 
   const title = document.querySelector('h1');
 
+  const displayContainer = document.querySelector('.winner');
+  const announcement = displayContainer.querySelector('p');
+
   // new game animation
   const _initTiles = () => {
     gameTiles.forEach((tile, index) => {
@@ -101,10 +104,12 @@ const Game = (() => {
   }
 
   const _introAnimation = () => {
+    displayContainer.style.zIndex = 1;
+    announcement.style.color = 'transparent';
 
     title.style.color = 'transparent';
     scoreBoard.style.transform = 'translate(0, 0)';
-    
+
   }
 
   const _playerMove = (tile) => {
@@ -244,7 +249,7 @@ const Game = (() => {
         mask.classList.remove('dissolve-mask');
 
         gameTiles[index].style.color = 'black';
-        gameTiles[index].style.outline = '0.1rem solid black';
+        //gameTiles[index].style.border = '0.1rem solid black';
       });
     }
 
@@ -307,12 +312,12 @@ const Game = (() => {
     
       if (winSet.includes(+tile.id)) {
         tile.style.backgroundColor = 'white';
+        //tile.style.border = '0.5rem dashed transparent';
       }
 
       else {
         tile.style.color   = 'aqua';
-        tile.style.outline = 'none';
-        tile.style.border  = 'none';
+        //tile.style.border  = 'none';
         tile.style.backgroundColor = 'pink';
       }
     }
@@ -373,11 +378,45 @@ const Game = (() => {
     });
     _resetTiles();
     _initTiles();
+
+    announcement.textContent = 'Draw Game!';
+    
+    if (playerScore > comptrScore) {
+      announcement.textContent = 'You Won!';
+    }
+    if (comptrScore > playerScore) {
+      announcement.textContent = 'You Lost!';
+    }
+
+    announcement.style.color = 'black';
+    displayContainer.appendChild(announcement);
+
+    displayContainer.style.zIndex = 4;
+
+    newGameBtn.style.width = '10ch';
+    newGameBtn.style.color = 'black';
+    newGameBtn.style.border = '0.1rem dashed rgb(0, 0, 0)';
+  }
+
+  const _resetPoints = () => {
+
+    gameNumber = 3;    
+    playerScore = 0;
+    comptrScore = 0;
+  }
+
+  const _getGameNumber = () => { 
+    return gameNumber; 
   }
 
   return {
     begin: () => {
+      _resetPoints();
       _newGame();
+    },
+
+    game: () => {
+      return _getGameNumber();
     }
   }
 
@@ -388,9 +427,23 @@ const tictactoe = Game;
 const newGameBtn = document.querySelector('.js-new-game-btn');
 
 newGameBtn.addEventListener('click', () => {
+  newGameBtn.style.color = 'transparent';
 
-  tictactoe.begin();
-  newGameBtn.style.transform = 'translate(0, 80px)';
+  setTimeout(() => {
+    newGameBtn.style.width = 0;
+    newGameBtn.style.border = 'none';
 
-});
+    tictactoe.begin();
+  }, 600)
+
+  if (tictactoe.game() === 0) {
+    const points = document.querySelectorAll('.point')
+    points.forEach(point => {
+      point.classList.remove('fa-check-circle');
+      point.classList.add('fa-circle');
+    });      
+  }
+}); 
+
+
 
