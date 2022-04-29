@@ -16,8 +16,6 @@ const Game = (() => {
     col1, col2, col3,
     dia1, dia2 ];
 
-  let winningMoves = [];
-
   // game assets
   const playerMoves  = [];
   const comptrMoves  = [];
@@ -28,16 +26,36 @@ const Game = (() => {
   let lastTile = -1;
   let currTile = -1;
 
+  let winSet;
   let playerScore = 0;
   let comptrScore = 0;
 
   let play = false;
+  let gameNumber = 3;
 
   let hasComPlayed = true;
 
   // DOM elemets
-  let masks = document.querySelectorAll('.mask');
+  const masks = document.querySelectorAll('.mask');
   const gameTiles = document.querySelectorAll('.tile');
+
+  const title = document.querySelector('h1');
+
+  // new game animation
+  const _initTiles = () => {
+    gameTiles.forEach((tile, index) => {
+
+      masks[index].style.userSelect = 'none';
+      if (index <= 2) tile.style.transform = 'translate(0px, 260px)';
+      if (index >= 3 && index < 6) tile.style.transform = 'translate(0px, 130px)';
+
+    });    
+  }
+
+  _initTiles();
+  
+  const scoreBoard = document.querySelector('.score');
+  scoreBoard.style.transform = 'translate(0, 120px)';
 
   masks.forEach((mask, index) => {
     mask.addEventListener('click', () => {
@@ -45,18 +63,20 @@ const Game = (() => {
 
       if (hasComPlayed) currTile = index;
 
-      if (currTile !== lastTile) {
+      if (currTile !== lastTile && available.includes(index)) {
         hasComPlayed = false;
         _playerMove(index);
         lastTile = currTile;
       } 
     });
-  }, {once : true});
+  });
 
   //private game function methods
   const _newGame = () => {
+
     _resetBoard();
     play = true;
+
     console.log('new game');
   }
 
@@ -73,10 +93,18 @@ const Game = (() => {
     lastTile = -1;
     currTile = -1;
 
+    _introAnimation();
     _resetTiles();
 
     removedTiles.length = 0;
     hasComPlayed = true;
+  }
+
+  const _introAnimation = () => {
+
+    title.style.color = 'transparent';
+    scoreBoard.style.transform = 'translate(0, 0)';
+    
   }
 
   const _playerMove = (tile) => {
@@ -91,7 +119,12 @@ const Game = (() => {
     
     _computerPlay();
 
-    if (available.length === 0) console.log('draw game');
+    if (available.length === 0) {
+
+      gameNumber--;
+      _gameTracker('draw');
+
+    }
   }
 
   const _computerPlay = () => {
@@ -176,12 +209,18 @@ const Game = (() => {
   }
 
   const _removeTileFromPlay = (tile) => {
+
     available.filter((compare, index) => {
+
       if (compare === tile) {
+
         available.splice(index, 1);
         removedTiles.push(index);
+
       }
+
     });
+
   }
 
   const _assignTile = (origin, tileNum) => {
@@ -198,28 +237,45 @@ const Game = (() => {
   const _resetTiles = () => {
     if (removedTiles.length > 0) {
 
-      masks.forEach((mask) => {
+      masks.forEach((mask, index) => {
 
         mask.style.cursor = 'pointer';
         mask.style.userSelect = 'auto';
         mask.classList.remove('dissolve-mask');
+
+        gameTiles[index].style.color = 'black';
+        gameTiles[index].style.outline = '0.1rem solid black';
       });
     }
+
+    if (gameNumber === 0) return;
+
+    let delayTimer = 600;
+
+    gameTiles.forEach(tile => {
+
+      setTimeout(() => {
+        tile.style.transform = 'translate(0, 0)';
+      }, delayTimer);
+      
+      delayTimer+=300;
+    });
   }
 
   const _revealPlay = (position) => {
     masks[position].classList.add('dissolve-mask');
     
     setTimeout(() => {
+
       masks[position].style.userSelect = 'auto';
       masks[position].style.cursor = 'not-allowed';
+
     }, 300);
   }
 
   const _checkTileCombination = (moveSet) => {
     if (moveSet.length < 3) return;
     
-    let winSet;
     let winner = false;
 
     const moveSetToCompare = moveSet.sort((a, z) => a - z).join();
@@ -244,47 +300,79 @@ const Game = (() => {
     return winner;
   }
 
-  const _declareWinner = (winner, tilesToHighlight) => {
+  const _declareWinner = (winner) => {
+    _updateScore(winner);
 
     for (tile of gameTiles) {
-      tile.style.backgroundColor = 'black';
+    
+      if (winSet.includes(+tile.id)) {
+        tile.style.backgroundColor = 'white';
+      }
 
-      
-      if (tilesToHighlight.includes(Number(tile.id))) {
-        tile.style.backgroundColor = 'yellow';
+      else {
+        tile.style.color   = 'aqua';
+        tile.style.outline = 'none';
+        tile.style.border  = 'none';
+        tile.style.backgroundColor = 'pink';
       }
     }
 
-    switch(winner) {
+    gameNumber--;
+    _gameTracker();
+  }
+
+  const _updateScore = (recipient) => {
+    let pointTo;
+    let selector;
+
+    switch(recipient) {
       case 'player':
-        playerScore++
+        playerScore++;
+        pointTo = playerScore;
+        selector = '.you';
+
         console.log( `You Win!` );
         console.log( `Your Score: ${playerScore}` );
         break;
-      
+
       case 'computer':
         comptrScore++;
+        pointTo = comptrScore;
+        selector = '.com';
+
         console.log( `You Lose!` );
         console.log( `COM Score: ${comptrScore}` );
         break;
     }
-    _endGame();
+
+    const getPoints = document.querySelectorAll(`${selector}`);
+
+    setTimeout(() => {
+      for(let i = 0; i < pointTo; i++) {
+        getPoints[i].classList.remove('fa-circle');
+        getPoints[i].classList.add('fa-check-circle');
+      }
+    }, 2000);
+
+  }
+
+  const _gameTracker = (outcome = '') => {
+    if (outcome !== '') console.log('draw game');
+
+    gameNumber !== 0 
+    ? setTimeout(_newGame, 2500)
+    : setTimeout(_endGame, 2500);
   }
 
   const _endGame = () => {
     play = false;
     console.log('end of game');
 
-    gameTiles.forEach(tile => {
-      // tile.style.backgroundColor = 'yellow';
-    });
-
     masks.forEach(mask => {
       mask.style.userSelect = 'none';
     });
-  }
-
-  const _handleScore = () => {
+    _resetTiles();
+    _initTiles();
   }
 
   return {
@@ -298,7 +386,11 @@ const Game = (() => {
 const tictactoe = Game;
 
 const newGameBtn = document.querySelector('.js-new-game-btn');
+
 newGameBtn.addEventListener('click', () => {
-  // newGameBtn.textContent = 'Reset Game';
+
   tictactoe.begin();
+  newGameBtn.style.transform = 'translate(0, 80px)';
+
 });
+
