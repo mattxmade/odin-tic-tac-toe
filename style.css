@@ -40,7 +40,7 @@ ul {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  top: 6rem;
+  top: 4rem;
   margin: 2rem 0;
   transition: 0.9s;
   font-size: 2.8rem;
@@ -81,7 +81,7 @@ main {
   padding: 3rem;
   display: flex;
   flex-wrap: wrap;
-  top: 3rem;
+  top: 1rem;
   max-width: 47rem;
   z-index: 1;
   position: relative;
