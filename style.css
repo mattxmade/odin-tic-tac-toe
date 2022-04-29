@@ -110,7 +110,7 @@ main .winner {
   position: absolute;
   font-family: "Amatic SC", cursive;
 }
-@media (max-width: 880px) {
+@media (max-width: 620px) {
   main h1,
 main .winner {
     font-size: 7rem;
