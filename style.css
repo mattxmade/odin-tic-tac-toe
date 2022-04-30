@@ -253,13 +253,14 @@ footer ul {
   margin: 0;
   padding: 0 2rem;
   min-width: 100%;
-  color: rgb(100, 100, 100);
+  z-index: -1;
   display: flex;
   justify-content: space-between;
   border: none;
   border-radius: 0;
   box-sizing: border-box;
   background: transparent;
+  color: rgb(100, 100, 100);
 }
 
 footer i {
