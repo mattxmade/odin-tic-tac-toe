@@ -258,7 +258,7 @@ footer ul {
   border: none;
   border-radius: 0;
   box-sizing: border-box;
-  background-color: transparent;
+  background: transparent;
 }
 
 footer i {
