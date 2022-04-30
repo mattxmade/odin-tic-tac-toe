@@ -11,7 +11,7 @@
 }
 
 html {
-  height: 100vh;
+  min-height: 100vh;
   font-size: 1.6rem;
   font-family: "Fredoka One", cursive;
 }
@@ -21,7 +21,6 @@ body {
   align-items: center;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
 }
 
 .wrapper {
@@ -238,7 +237,7 @@ footer {
   z-index: 10;
   width: 100%;
   bottom: 6rem;
-  position: fixed;
+  position: absolute;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
