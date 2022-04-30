@@ -405,24 +405,47 @@ const Game = (() => {
     comptrScore = 0;
   }
 
+  const _resetScoreBoard = () => {
+    const points = document.querySelectorAll('.point')
+    points.forEach(point => {
+      point.classList.remove('fa-check-circle');
+      point.classList.add('fa-circle');
+    });  
+  }
+
   const _getGameNumber = () => { 
     return gameNumber; 
   }
 
+  const _getPlayerScore = () => {
+    return playerScore;
+  }
+
   return {
-    begin: () => {
-      _resetPoints();
-      _newGame();
+    gamesLeft: () => {
+      return _getGameNumber() !== 0 ? true : _resetScoreBoard();
     },
 
-    game: () => {
-      return _getGameNumber();
+    newPlayer: (name) => {
+
+      const score = () => {
+        return _getPlayerScore();
+      }
+
+      const newGame = () => {
+        _resetPoints();
+        _newGame();
+      }
+
+      return { name, score, newGame }
     }
   }
 
 })();
 
 const tictactoe = Game;
+const newPlayer = tictactoe.newPlayer('user');
+//console.log(newPlayer.name);
 
 const newGameBtn = document.querySelector('.js-new-game-btn');
 
@@ -433,16 +456,10 @@ newGameBtn.addEventListener('click', () => {
     newGameBtn.style.width = 0;
     newGameBtn.style.border = 'none';
 
-    tictactoe.begin();
+    newPlayer.newGame();
   }, 600)
 
-  if (tictactoe.game() === 0) {
-    const points = document.querySelectorAll('.point')
-    points.forEach(point => {
-      point.classList.remove('fa-check-circle');
-      point.classList.add('fa-circle');
-    });      
-  }
+  tictactoe.gamesLeft();
 }); 
 
 
